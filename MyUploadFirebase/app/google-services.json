@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "374676913285",
+    "project_id": "upload-ds3m-gustavo-prevelate",
+    "storage_bucket": "upload-ds3m-gustavo-prevelate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374676913285:android:3d898dc776258ed33dbdec",
+        "android_client_info": {
+          "package_name": "br.senai.sp.jandira.myuploadfirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDA6rM-JF6_Ak3h3NNxC0X7trlinS0z4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
