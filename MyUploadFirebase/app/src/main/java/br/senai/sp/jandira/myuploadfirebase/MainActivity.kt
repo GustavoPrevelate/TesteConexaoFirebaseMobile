@@ -1,8 +1,10 @@
 package br.senai.sp.jandira.myuploadfirebase
 
+import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import br.senai.sp.jandira.myuploadfirebase.databinding.ActivityMainBinding
@@ -65,9 +67,14 @@ class MainActivity : AppCompatActivity() {
             uploadImage()
         }
 
+        //TRATA O EVENTO DE CLICK DO BOTÃO DE LISTAR
+        binding.showAllBtn.setOnClickListener {
+            startActivity(Intent(this, ImagesFeed::class.java))
+        }
+
     }
 
-    //FUNÇÃO DE UPLOAD
+//    //FUNÇÃO DE UPLOAD
     private fun uploadImage(){
 
         binding.progressBar.visibility = android.view.View.VISIBLE
@@ -76,28 +83,80 @@ class MainActivity : AppCompatActivity() {
         storageRef = storageRef.child(System.currentTimeMillis().toString())
 
         //EXECUTA O PROESSO DE UPLOAD DA IMAGEM
-        imageUri?.let {
-            storageRef.putFile(it).addOnCompleteListener {
-                task->
-                        if(task.isSuccessful){
-                            Toast.makeText(
-                                this,
-                                "UPLOAD CONCLUIDO!",
-                                Toast.LENGTH_LONG
-                            ).show()
+//        imageUri?.let {
+//            storageRef.putFile(it).addOnCompleteListener {
+//                task->
+//                        if(task.isSuccessful){
+//                            Toast.makeText(
+//                                this,
+//                                "UPLOAD CONCLUIDO!",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }else{
+//                            Toast.makeText(
+//                                this,
+//                                "ERRO AO REALIZAR O UPLOAD!",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }
+//
+//                binding.progressBar.visibility = View.GONE
+//                binding.imageView.setImageResource(R.drawable.upload)
+//
+//            }
+//
+//        }
+
+    //GRAVAÇÃO E PROCESSO DE UPLOAD DE IMAGEM NO FIRESTORE V1
+
+    ///// PROCESSO DE UPLOAD - V2 /////
+    imageUri?.let {
+        storageRef.putFile(it).addOnCompleteListener { task->
+
+            if (task.isSuccessful) {
+
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+
+                    val map = HashMap<String, Any>()
+                    map["pic"] = uri.toString()
+
+                    firebaseFireStore.collection("images").add(map).addOnCompleteListener { firestoreTask ->
+
+                        if (firestoreTask.isSuccessful){
+                            Toast.makeText(this, "Uploaded Successfully", Toast.LENGTH_SHORT).show()
+
                         }else{
-                            Toast.makeText(
-                                this,
-                                "ERRO AO REALIZAR O UPLOAD!",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(this, firestoreTask.exception?.message, Toast.LENGTH_SHORT).show()
+
                         }
+                        binding.progressBar.visibility = View.GONE
+                        binding.imageView.setImageResource(R.drawable.upload)
+
+                    }
+                }
+
+            }else{
+
+                Toast.makeText(this,  task.exception?.message, Toast.LENGTH_SHORT).show()
 
             }
-            binding.progressBar.visibility = android.view.View.VISIBLE
+
+            //BARRA DE PROGRESSO DO UPLOAD
+            binding.progressBar.visibility = View.GONE
+
+            //TROCA A IMAGEM PARA A IMAGEM PADRÃO
+            binding.imageView.setImageResource(R.drawable.upload)
+
         }
+    }
+    ///// PROCESSO DE UPLOAD - V2 /////
+
 
     }
+
+
+
+
 
 }
 
